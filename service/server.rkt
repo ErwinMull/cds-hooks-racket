@@ -52,20 +52,11 @@
 
 ;;; ================================ Serve =====================================
 
-(define (start)
-  (define main-cust (make-custodian))
-  (parameterize ([current-custodian main-cust])
-    (thread
-     (λ () (serve/servlet app
-                          #:port 3000
-                          #:servlet-regexp #rx""
-                          #:command-line? #t
-                          ;; #:log-file (current-output-port)
-                          )))
-    (displayln "Server started!"))
-  (define (stop)
-    (custodian-shutdown-all main-cust)
-    (displayln "Server stopped!"))
-  stop)
-
-(define stop (start))
+(module+ main
+  (displayln "Server started!")
+  (serve/servlet app
+                 #:port 3000
+                 #:servlet-regexp #rx""
+                 #:command-line? #t
+                 #:log-file (current-output-port))
+  (displayln "Server stopped!"))
