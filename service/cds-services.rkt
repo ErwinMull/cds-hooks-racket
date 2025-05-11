@@ -62,25 +62,37 @@
 
 ;;; ======================= CDS discovery & routing ============================
 
-(define services-discovery-table
-  (make-services-discovery-table
-   (list (cons patient-greeting-service patient-greeting-handler)
-         (cons hemoglobin-alarm-service hemoglobin-alarm-handler))))
+(define service-handler-list
+  (list (cons patient-greeting-service patient-greeting-handler)
+        (cons hemoglobin-alarm-service hemoglobin-alarm-handler)))
 
-(define services-discovery-table-jsexpr
-  (services-discovery-table->jsexpr services-discovery-table))
+(define services-routing-table
+  (foldl (λ (curr ht)
+           (let ([hook (cds-service-discovery-hook (car curr))]
+                 [id (cds-service-discovery-id (car curr))]
+                 [handler (cdr curr)])
+             (let ([tmp (hash-ref ht hook (hasheq))])
+               (hash-set ht hook (hash-set tmp id handler)))))
+         (hasheq)
+         service-handler-list))
+
+(define services-discovery-information
+  (hasheq 'services
+          (map (λ (x)
+                 (cds-service-discovery->jsexpr (car x)))
+               service-handler-list)))
 
 (define (handle-cds-discovery req)
   (response/jsexpr
-   services-discovery-table-jsexpr))
+   services-discovery-information))
 
 (define (handle-cds-hook req id)
   (define body (request-post-data/raw req))
   (define parsed-body (bytes->jsexpr body))
   (define hook (string->symbol (hash-ref parsed-body 'hook)))
   (define handler
-    (for/fold ([v services-discovery-table])
-              ([k (in-list (list hook id 'handler))]
+    (for/fold ([v services-routing-table])
+              ([k (in-list (list hook id))]
                #:break (not v))
       (hash-ref v k #f)))
   (handler req))
