@@ -1,3 +1,7 @@
 #+TITLE: CDS Hooks in Racket
 
-Implementation of the [[https://cds-hooks.org/][CDS Hooks specification]] in Racket
+Example implementation of a CDS service
+
+* Resources
+- [[https://cds-hooks.org/][CDS Hooks specification]]
+- [[https://sandbox.cds-hooks.org/][CDS Hooks sandbox]]
