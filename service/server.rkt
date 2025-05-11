@@ -1,9 +1,6 @@
 #lang racket/base
 
-(require web-server/dispatch
-         web-server/http/request-structs
-         web-server/http/response-structs
-         web-server/servlet-env
+(require web-server/servlet-env
          web-server/servlet
 
          "cds-services.rkt")
