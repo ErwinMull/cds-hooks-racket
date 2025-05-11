@@ -19,35 +19,33 @@
       tmp))
   (define-values (low high)
     (extract-low&high (hash-ref observation 'referenceRange '())))
-  (define details (format "~a (low: ~a, high: ~a)" (or value "n/a") low high))
+  (define details (format "~a (low: ~a, high: ~a)" value low high))
   (cond
     [(not value) (list
                   (hasheq 'summary "No Blood Pressure found"
                           'indicator "info"
-                          'details details
                           'source (hasheq
                                    'label "My service")))]
     [(and (not low) (not high)) (list
                                  (hasheq 'summary "No Reference Range given"
                                          'indicator "info"
-                                         'details details
                                          'source (hasheq
                                                   'label "My service")))]
     [(and low (< value low)) (list
                               (hasheq 'summary "Blood Pressure: LOW"
                                       'indicator "warning"
-                                      'details details
+                                      'detail details
                                       'source (hasheq
                                                'label "My service")))]
     [(and high (> value high)) (list
                                 (hasheq 'summary "Blood Pressure: HIGH"
                                         'indicator "warning"
-                                        'details details
+                                        'detail details
                                         'source (hasheq
                                                  'label "My service")))]
     [else (list
            (hasheq 'summary "Blood Pressure: NORMAL"
                    'indicator "info"
-                   'details details
+                   'detail details
                    'source (hasheq
                             'label "My service")))]))
