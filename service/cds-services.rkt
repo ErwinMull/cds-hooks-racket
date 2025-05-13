@@ -3,7 +3,7 @@
 (require json
          web-server/http
 
-         "../utils/cds-discovery-utils.rkt"
+         "../core/cds-discovery-struct.rkt"
 
          "patient-greeting-service.rkt"
          "hemoglobin-check-service.rkt")
@@ -14,7 +14,7 @@
 ;;; ======================= Patient greeting service ===========================
 
 (define patient-greeting-service
-  (make-cds-service-discovery
+  (make-cds-discovery
    'patient-view
    'patient-greeting
    "Greets the patient"
@@ -36,7 +36,7 @@
 ;;; =========================== Hemoglobin alarm ===============================
 
 (define hemoglobin-alarm-service
-  (make-cds-service-discovery
+  (make-cds-discovery
    'patient-view
    'hemoglobin-alarm
    "Alarms if the hemoglobin concentration lies outside of the reference range"
@@ -68,8 +68,8 @@
 
 (define services-routing-table
   (foldl (λ (curr ht)
-           (let ([hook (cds-service-discovery-hook (car curr))]
-                 [id (cds-service-discovery-id (car curr))]
+           (let ([hook (cds-discovery-hook (car curr))]
+                 [id (cds-discovery-id (car curr))]
                  [handler (cdr curr)])
              (let ([tmp (hash-ref ht hook (hasheq))])
                (hash-set ht hook (hash-set tmp id handler)))))
@@ -79,7 +79,7 @@
 (define services-discovery-information
   (hasheq 'services
           (map (λ (x)
-                 (cds-service-discovery->jsexpr (car x)))
+                 (cds-discovery->jsexpr (car x)))
                service-handler-list)))
 
 (define (handle-cds-discovery req)
